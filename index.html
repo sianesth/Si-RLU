@@ -895,6 +895,91 @@
       color: #fff;
     }
 
+    .satisfaction-survey {
+      margin-top: 13px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      text-align: center;
+    }
+
+    .satisfaction-survey h3 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 0.82rem;
+      font-weight: 850;
+    }
+
+    .satisfaction-survey > p {
+      margin: 3px 0 9px;
+      color: var(--muted);
+      font-size: 0.68rem;
+    }
+
+    .satisfaction-options {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .satisfaction-button {
+      display: grid;
+      min-width: 0;
+      min-height: 64px;
+      place-items: center;
+      align-content: center;
+      gap: 3px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #fff;
+      color: #536674;
+      cursor: pointer;
+      font: inherit;
+      transition: transform .08s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
+    }
+
+    .satisfaction-button:hover,
+    .satisfaction-button:focus-visible {
+      border-color: var(--rating-color);
+      background: var(--rating-soft);
+      box-shadow: 0 5px 12px rgba(20, 55, 70, 0.11);
+      outline: none;
+    }
+
+    .satisfaction-button:active { transform: scale(0.97); }
+
+    .satisfaction-button[aria-pressed="true"] {
+      border-color: var(--rating-color);
+      background: var(--rating-soft);
+      box-shadow: inset 0 0 0 1px var(--rating-color);
+      color: var(--navy);
+    }
+
+    .satisfaction-button:nth-child(1) { --rating-color: #c95b66; --rating-soft: #fff0f2; }
+    .satisfaction-button:nth-child(2) { --rating-color: #d9894c; --rating-soft: #fff5ec; }
+    .satisfaction-button:nth-child(3) { --rating-color: #d4aa36; --rating-soft: #fff9df; }
+    .satisfaction-button:nth-child(4) { --rating-color: #79a95b; --rating-soft: #f1f8e9; }
+    .satisfaction-button:nth-child(5) { --rating-color: #3e9f99; --rating-soft: #e8f7f5; }
+
+    .satisfaction-face {
+      font-size: 1.55rem;
+      line-height: 1;
+    }
+
+    .satisfaction-label {
+      font-size: 0.58rem;
+      font-weight: 750;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .satisfaction-status {
+      min-height: 17px;
+      margin: 6px 0 0;
+      color: var(--brand-dark);
+      font-size: 0.66rem;
+      font-weight: 700;
+    }
+
     .clinical-note {
       margin: 13px 0 0;
       border-top: 1px solid var(--border);
@@ -1282,7 +1367,8 @@
       .app-header,
       .input-card,
       footer,
-      .result-actions { display: none !important; }
+      .result-actions,
+      .satisfaction-survey { display: none !important; }
       .app-shell { width: 100%; }
       main { display: block; padding: 0; }
       .result-column { position: static; }
@@ -1432,6 +1518,18 @@
               <span id="export-button-label">พิมพ์ / บันทึก PDF</span>
             </button>
           </div>
+          <section class="satisfaction-survey" aria-labelledby="satisfaction-title">
+            <h3 id="satisfaction-title">ความพึงพอใจในการใช้งานระบบ</h3>
+            <p>เลือก 1 ระดับเพื่อบันทึกความคิดเห็น</p>
+            <div id="satisfaction-options" class="satisfaction-options" role="group" aria-label="ระดับความพึงพอใจ">
+              <button class="satisfaction-button" type="button" data-score="1" data-label="น้อยที่สุด" aria-pressed="false"><span class="satisfaction-face" aria-hidden="true">😣</span><span class="satisfaction-label">น้อยที่สุด</span></button>
+              <button class="satisfaction-button" type="button" data-score="2" data-label="น้อย" aria-pressed="false"><span class="satisfaction-face" aria-hidden="true">🙁</span><span class="satisfaction-label">น้อย</span></button>
+              <button class="satisfaction-button" type="button" data-score="3" data-label="ปานกลาง" aria-pressed="false"><span class="satisfaction-face" aria-hidden="true">😐</span><span class="satisfaction-label">ปานกลาง</span></button>
+              <button class="satisfaction-button" type="button" data-score="4" data-label="มาก" aria-pressed="false"><span class="satisfaction-face" aria-hidden="true">🙂</span><span class="satisfaction-label">มาก</span></button>
+              <button class="satisfaction-button" type="button" data-score="5" data-label="มากที่สุด" aria-pressed="false"><span class="satisfaction-face" aria-hidden="true">😄</span><span class="satisfaction-label">มากที่สุด</span></button>
+            </div>
+            <p id="satisfaction-status" class="satisfaction-status" aria-live="polite"></p>
+          </section>
           <p class="clinical-note">ระบบนี้เป็นเครื่องมือช่วยสรุปคำแนะนำการส่งตรวจทางห้องปฏิบัติการ ควรตรวจสอบแนวทางปฏิบัติ Si-RLU ประกาศ รพ.ศิริราช พ.ศ. 2567 <a id="guideline-pdf-link" class="clinical-guideline-link" href="#" aria-label="เปิดแนวทางปฏิบัติ Si-RLU พ.ศ. 2567 ไฟล์ PDF">📄 เปิดไฟล์ PDF</a></p>
         </div>
       </section>
@@ -1459,7 +1557,7 @@
 
   <footer>
     <span class="footer-copyright">© 2026 | ภาควิชาวิสัญญีวิทยา คณะแพทยศาสตร์ศิริราชพยาบาล</span>
-    <span class="footer-version">Version 1.0.4</span>
+    <span class="footer-version">Version 1.0.5</span>
   </footer>
 
   <script>
@@ -1545,7 +1643,7 @@
           section: 'disease',
           system: 'cardiovascular',
           th: 'โรคหัวใจพิการแต่กำเนิด',
-          en: 'Congenital cardiac diseases',
+          en: 'Congenital heart diseases',
           tests: ['CBC', 'CXR', 'EKG', 'ECHO'],
           testNotes: { ECHO: 'พิจารณาตามข้อบ่งชี้ (+/- echocardiogram)' }
         },
@@ -1570,7 +1668,7 @@
           section: 'disease',
           system: 'pulmonary',
           th: 'ภาวะหยุดหายใจขณะหลับชนิดอุดกั้นรุนแรง',
-          en: 'Severe obstructive sleep apnea',
+          en: 'Severe OSA',
           tests: ['CXR', 'EKG', 'ECHO'],
           testNotes: { ECHO: 'พิจารณาตามข้อบ่งชี้ (+/- echocardiogram)' }
         },
@@ -1736,7 +1834,7 @@
           section: 'disease',
           system: 'cardiovascular',
           th: 'โรคหัวใจและหลอดเลือด',
-          en: 'Cardiovascular diseases',
+          en: 'Cardiovascular diseases (e.g. HT, CAD)',
           tests: ['CXR', 'CR', 'ELECTROLYTES', 'EKG']
         },
         {
@@ -1967,6 +2065,8 @@
     const printButton = document.getElementById('print-button');
     const exportButtonLabel = document.getElementById('export-button-label');
     const guidelinePdfLink = document.getElementById('guideline-pdf-link');
+    const satisfactionOptions = document.getElementById('satisfaction-options');
+    const satisfactionStatus = document.getElementById('satisfaction-status');
     const riskOptions = document.getElementById('risk-options');
     const riskReferenceButton = document.getElementById('risk-reference-button');
     const referenceDialog = document.getElementById('reference-dialog');
@@ -2177,7 +2277,7 @@
       selectionArea.innerHTML = sections.map(function (section) {
         return renderSection(section, rules.filter(function (rule) {
           return rule.section === section;
-        }), true);
+        }), false);
       }).join('');
 
       selectionArea.querySelectorAll('input[type="checkbox"]').forEach(function (input) {
@@ -2249,15 +2349,48 @@
         if (target) target.textContent = String(count);
       });
 
-      calculateButton.disabled = parseAge() === null || !getSurgicalRisk() || checked.length === 0;
+      calculateButton.disabled = parseAge() === null || !getSurgicalRisk();
     }
 
-    function calculateRecommendations(group, selectedIds) {
+    function getTable1Tests(age, surgicalRisk) {
+      if (age < 15) {
+        return surgicalRisk === 'High' ? ['CBC'] : [];
+      }
+      if (age < 45) {
+        if (surgicalRisk === 'Intermediate') return ['CBC'];
+        if (surgicalRisk === 'High') return ['CBC', 'CR', 'BLOOD_SUGAR', 'ELECTROLYTES', 'CXR', 'EKG'];
+        return [];
+      }
+      if (age < 65) {
+        if (surgicalRisk === 'Low') return ['CBC'];
+        if (surgicalRisk === 'Intermediate') return ['CBC', 'CR', 'BLOOD_SUGAR', 'CXR', 'EKG'];
+        return ['CBC', 'CR', 'BLOOD_SUGAR', 'ELECTROLYTES', 'CXR', 'EKG'];
+      }
+      if (surgicalRisk === 'Low') return ['CBC', 'CR', 'CXR', 'EKG'];
+      if (surgicalRisk === 'Intermediate') return ['CBC', 'CR', 'BLOOD_SUGAR', 'CXR', 'EKG'];
+      return ['CBC', 'CR', 'BLOOD_SUGAR', 'ELECTROLYTES', 'CXR', 'EKG'];
+    }
+
+    function calculateRecommendations(group, selectedIds, age, surgicalRisk) {
       const selectedSet = new Set(selectedIds);
       const selectedRules = RULES[group].filter(function (rule) {
         return selectedSet.has(rule.id);
       });
       const merged = new Map();
+
+      const table1Tests = Number.isFinite(age) && surgicalRisk ? getTable1Tests(age, surgicalRisk) : [];
+      table1Tests.forEach(function (testId) {
+        if (!TEST_CATALOG[testId]) return;
+        merged.set(testId, {
+          id: testId,
+          label: TEST_CATALOG[testId].label,
+          displayLabel: '',
+          detail: TEST_CATALOG[testId].detail,
+          order: TEST_CATALOG[testId].order,
+          notes: new Set(),
+          sources: new Set(['Table 1'])
+        });
+      });
 
       selectedRules.forEach(function (rule) {
         rule.tests.forEach(function (testId) {
@@ -2306,6 +2439,50 @@
       lastResult = null;
       resultContent.hidden = true;
       resultEmpty.hidden = false;
+      resetSatisfactionState();
+    }
+
+    function resetSatisfactionState() {
+      satisfactionOptions.querySelectorAll('.satisfaction-button').forEach(function (button) {
+        button.setAttribute('aria-pressed', 'false');
+        button.disabled = false;
+      });
+      satisfactionStatus.textContent = '';
+    }
+
+    function submitSatisfaction(score, label) {
+      if (!lastResult || !lastResult.submissionId || !isWebAppConfigured()) {
+        satisfactionStatus.textContent = 'ยังไม่สามารถบันทึกได้ กรุณาประมวลผลคำแนะนำอีกครั้ง';
+        return;
+      }
+
+      satisfactionOptions.querySelectorAll('.satisfaction-button').forEach(function (button) {
+        button.setAttribute('aria-pressed', String(Number(button.dataset.score) === score));
+      });
+      satisfactionStatus.textContent = 'กำลังบันทึกความคิดเห็น…';
+
+      const feedback = {
+        eventType: 'satisfaction',
+        submissionId: lastResult.submissionId,
+        satisfactionScore: score,
+        satisfactionLabel: label,
+        satisfactionTimestamp: new Date().toISOString(),
+        appVersion: APP_VERSION
+      };
+      const params = new URLSearchParams();
+      params.append('payload', JSON.stringify(feedback));
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body: params.toString(),
+        keepalive: true
+      }).then(function () {
+        satisfactionStatus.textContent = 'ขอบคุณสำหรับความคิดเห็นของคุณ';
+      }).catch(function () {
+        satisfactionStatus.textContent = 'บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง';
+      });
     }
 
     function openResultModal() {
@@ -2605,16 +2782,7 @@
         document.querySelector('input[name="surgical-risk"]').focus();
         return;
       }
-      if (!selectedIds.length) {
-        showValidation('กรุณาเลือกโรค/ภาวะ ปัจจัยเสี่ยง หรือยาอย่างน้อย 1 รายการ');
-        return;
-      }
-
-      const calculation = calculateRecommendations(currentAgeGroup, selectedIds);
-      if (!calculation.recommendations.length) {
-        showValidation('ไม่พบรายการตรวจจากข้อมูลที่เลือก กรุณาตรวจสอบรายการอีกครั้ง');
-        return;
-      }
+      const calculation = calculateRecommendations(currentAgeGroup, selectedIds, age, surgicalRisk);
 
       lastResult = {
         age: age,
@@ -2622,8 +2790,9 @@
         calculation: calculation
       };
 
-      renderResults(age, surgicalRisk, calculation);
       const payload = buildPayload(age, surgicalRisk, calculation);
+      lastResult.submissionId = payload.submissionId;
+      renderResults(age, surgicalRisk, calculation);
       sendToGoogleSheets(payload);
 
       openResultModal();
@@ -2701,6 +2870,11 @@
       }
     });
     guidelinePdfLink.addEventListener('click', openEmbeddedGuidelinePdf);
+    satisfactionOptions.addEventListener('click', function (event) {
+      const button = event.target.closest('.satisfaction-button');
+      if (!button) return;
+      submitSatisfaction(Number(button.dataset.score), button.dataset.label);
+    });
 
     ageInput.addEventListener('keydown', function (event) {
       if (event.key === 'Enter' && !calculateButton.disabled) processRecommendation();
@@ -2714,10 +2888,11 @@
       version: DISPLAY_VERSION,
       rules: RULES,
       catalog: TEST_CATALOG,
-      calculate: function (group, ids) {
-        const result = calculateRecommendations(group, ids);
+      calculate: function (group, ids, age, surgicalRisk) {
+        const result = calculateRecommendations(group, ids, age, surgicalRisk);
         return result.recommendations.map(function (item) { return item.id; });
       },
+      table1Tests: getTable1Tests,
       ageGroup: getAgeGroup,
       allowedSurgicalRisks: getAllowedSurgicalRisks,
       updateSurgicalRiskOptions: updateSurgicalRiskOptions,
