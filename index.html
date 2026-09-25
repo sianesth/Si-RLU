@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="referrer" content="no-referrer">
-  <meta name="app-build" content="1.0.4">
+  <meta name="app-build" content="1.0.10">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; img-src 'self' data: https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
   <title>Preoperative Laboratory Recommendation</title>
   <meta name="description" content="ระบบช่วยสรุปรายการส่งตรวจทางห้องปฏิบัติการก่อนผ่าตัดตามอายุ โรค ความเสี่ยง และยา โดยตัดรายการซ้ำอัตโนมัติ">
@@ -177,6 +177,11 @@
       margin: 0;
       color: var(--muted);
       font-size: 0.88rem;
+    }
+
+    .result-card .card-head p {
+      color: var(--navy);
+      font-weight: 800;
     }
 
     .step-badge {
@@ -781,6 +786,9 @@
       padding: 13px 14px;
     }
 
+    .result-card > .result-overview { margin: 18px 18px 0; }
+    .result-card.has-results > .card-head { padding-top: 14px; }
+
     .result-overview strong {
       display: block;
       color: var(--brand-dark);
@@ -817,6 +825,23 @@
       border: 1px solid var(--border);
       border-radius: 14px;
       background: var(--border);
+    }
+
+    .test-list.is-empty {
+      display: block;
+      margin-top: 14px;
+      overflow: visible;
+      border: 0;
+      background: transparent;
+    }
+
+    .test-no-investigation {
+      color: #116b45;
+      padding: 12px 6px 14px;
+      text-align: center;
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.6;
     }
 
     .test-item {
@@ -858,9 +883,9 @@
     .test-qualifier {
       display: block;
       margin-top: 2px;
-      color: var(--muted);
+      color: var(--navy);
       font-size: 0.76rem;
-      font-weight: 600;
+      font-weight: 800;
       line-height: 1.3;
     }
 
@@ -1299,6 +1324,7 @@
       .selected-summary { order: -1; width: 100%; }
       .btn-primary { min-width: 0; }
       .result-content { padding: 14px; }
+      .result-card > .result-overview { margin: 14px 14px 0; }
       .reference-dialog {
         width: calc(100vw - 12px);
         max-width: calc(100vw - 12px);
@@ -1406,7 +1432,6 @@
           <h2 id="input-title">ข้อมูลสำหรับประเมิน</h2>
           <p>กรอกอายุ เลือกความเสี่ยง โรคหรือภาวะร่วม และยาที่ใช้อยู่</p>
         </div>
-        <span class="step-badge" aria-hidden="true">1</span>
       </div>
 
       <div class="input-body">
@@ -1479,13 +1504,19 @@
 
     <aside class="result-column" aria-labelledby="result-title">
       <section class="card result-card">
+        <div id="result-overview" class="result-overview" hidden>
+          <div>
+            <strong id="result-age-band"></strong>
+            <span id="result-context"></span>
+          </div>
+          <div id="test-count" class="test-count" aria-label="จำนวนรายการตรวจ">0</div>
+        </div>
         <div class="card-head">
           <div>
             <h2 id="result-title">Recommended investigations</h2>
-            <p>(ภายใน 6 เดือน)</p>
+            <p>ภายใน 6 เดือน</p>
           </div>
           <div class="result-head-actions">
-            <span class="step-badge" aria-hidden="true">2</span>
             <button id="result-close" class="result-close" type="button" aria-label="ปิดผลการประเมิน">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </button>
@@ -1505,13 +1536,6 @@
         </div>
 
         <div id="result-content" class="result-content" hidden>
-          <div class="result-overview">
-            <div>
-              <strong id="result-age-band"></strong>
-              <span id="result-context"></span>
-            </div>
-            <div id="test-count" class="test-count" aria-label="จำนวนรายการตรวจ">0</div>
-          </div>
           <div id="test-list" class="test-list"></div>
           <div class="result-actions">
             <button id="print-button" class="btn btn-secondary result-export" type="button">
@@ -1581,7 +1605,7 @@
 
     const REFERENCE_LABELS = Object.freeze({
       table1: 'ตารางที่ 1 — เกณฑ์อายุและ Surgical risk',
-      table2: 'ตารางที่ 2 — คำแนะนำสำหรับผู้ป่วยอายุน้อยกว่า 15 ปี',
+      table2: 'ตารางที่ 2 — คำแนะนำสำหรับผู้ป่วยอายุ < 15 ปี',
       table3: 'ตารางที่ 3 — คำแนะนำสำหรับผู้ป่วยอายุ 15 ปีขึ้นไป'
     });
 
@@ -1865,8 +1889,8 @@
             HBA1C: 'ใช้ผลตรวจภายใน 3 เดือน'
           },
           testDisplayLabels: {
-            BLOOD_SUGAR: 'Blood sugar (ภายใน 3 เดือน)',
-            HBA1C: 'HbA1c (ภายใน 3 เดือน)'
+            BLOOD_SUGAR: 'Blood sugar ภายใน 3 เดือน',
+            HBA1C: 'HbA1c ภายใน 3 เดือน'
           }
         },
         {
@@ -1877,7 +1901,7 @@
           en: 'BMI > 23 kg/m² in non-pregnancy',
           tests: ['BLOOD_SUGAR', 'CR', 'EKG'],
           testNotes: { BLOOD_SUGAR: 'ใช้ผลตรวจภายใน 3 เดือน' },
-          testDisplayLabels: { BLOOD_SUGAR: 'Blood sugar (ภายใน 3 เดือน)' }
+          testDisplayLabels: { BLOOD_SUGAR: 'Blood sugar ภายใน 3 เดือน' }
         },
         {
           id: 'adult-hyperthyroid',
@@ -2058,6 +2082,8 @@
     const resultContent = document.getElementById('result-content');
     const resultColumn = document.querySelector('.result-column');
     const resultCloseButton = document.getElementById('result-close');
+    const resultCard = document.querySelector('.result-card');
+    const resultOverview = document.getElementById('result-overview');
     const resultAgeBand = document.getElementById('result-age-band');
     const resultContext = document.getElementById('result-context');
     const testCount = document.getElementById('test-count');
@@ -2098,7 +2124,7 @@
     }
 
     function getAgeGroupLabel(group) {
-      return group === 'under15' ? 'ผู้ป่วยอายุน้อยกว่า 15 ปี' : 'ผู้ป่วยอายุ 15 ปีขึ้นไป';
+      return group === 'under15' ? 'ผู้ป่วยอายุ < 15 ปี' : 'ผู้ป่วยอายุ 15 ปีขึ้นไป';
     }
 
     function getTableLabel(group) {
@@ -2438,6 +2464,8 @@
       closeResultModal(false);
       lastResult = null;
       resultContent.hidden = true;
+      resultOverview.hidden = true;
+      resultCard.classList.remove('has-results');
       resultEmpty.hidden = false;
       resetSatisfactionState();
     }
@@ -2510,15 +2538,20 @@
       testCount.textContent = String(calculation.recommendations.length);
       testCount.setAttribute('aria-label', calculation.recommendations.length + ' รายการตรวจ');
 
-      testList.innerHTML = calculation.recommendations.map(function (item, index) {
-        return '<article class="test-item">' +
-          '<div class="test-number">' + (index + 1) + '</div>' +
-          '<div class="test-name">' + recommendationLabelMarkup(item) + '</div>' +
-          '</article>';
-      }).join('');
+      testList.classList.toggle('is-empty', calculation.recommendations.length === 0);
+      testList.innerHTML = calculation.recommendations.length === 0
+        ? '<div class="test-no-investigation" role="status">ไม่จำเป็นต้องส่งตรวจทางห้องปฏิบัติการ 🧪</div>'
+        : calculation.recommendations.map(function (item, index) {
+          return '<article class="test-item">' +
+            '<div class="test-number">' + (index + 1) + '</div>' +
+            '<div class="test-name">' + recommendationLabelMarkup(item) + '</div>' +
+            '</article>';
+        }).join('');
 
       resultEmpty.hidden = true;
       resultContent.hidden = false;
+      resultOverview.hidden = false;
+      resultCard.classList.add('has-results');
     }
 
     function recommendationLabel(item) {
@@ -2527,10 +2560,10 @@
 
     function recommendationLabelMarkup(item) {
       const label = recommendationLabel(item);
-      const qualifier = ' (ภายใน 3 เดือน)';
+      const qualifier = ' ภายใน 3 เดือน';
       if (label.endsWith(qualifier)) {
         return '<span class="test-primary">' + escapeHtml(label.slice(0, -qualifier.length)) + '</span>' +
-          '<span class="test-qualifier">(ภายใน 3 เดือน)</span>';
+          '<span class="test-qualifier">ภายใน 3 เดือน</span>';
       }
       return '<span class="test-primary">' + escapeHtml(label) + '</span>';
     }
@@ -2596,9 +2629,9 @@
       ctx.fillStyle = '#12385d';
       ctx.font = '800 46px ' + font;
       ctx.fillText('Recommended investigations', 90, 112);
-      ctx.fillStyle = '#6b7c86';
-      ctx.font = '500 27px ' + font;
-      ctx.fillText('(ภายใน 6 เดือน)', 90, 156);
+      ctx.fillStyle = '#12385d';
+      ctx.font = '800 27px ' + font;
+      ctx.fillText('ภายใน 6 เดือน', 90, 156);
 
       roundedRect(ctx, 90, 195, 1020, 118, 24, '#e7f7f4', '#cce6e1');
       ctx.fillStyle = '#075e58';
@@ -2625,16 +2658,16 @@
         ctx.textAlign = 'left';
 
         const fullLabel = recommendationLabel(item);
-        const qualifier = ' (ภายใน 3 เดือน)';
+        const qualifier = ' ภายใน 3 เดือน';
         const hasQualifier = fullLabel.endsWith(qualifier);
         const primary = hasQualifier ? fullLabel.slice(0, -qualifier.length) : fullLabel;
         ctx.fillStyle = '#172536';
         ctx.font = '800 30px ' + font;
         drawWrappedText(ctx, primary, x + 100, y + 59, 385, 35, 2);
         if (hasQualifier) {
-          ctx.fillStyle = '#6b7c86';
-          ctx.font = '600 22px ' + font;
-          ctx.fillText('(ภายใน 3 เดือน)', x + 100, y + 94);
+          ctx.fillStyle = '#12385d';
+          ctx.font = '800 22px ' + font;
+          ctx.fillText('ภายใน 3 เดือน', x + 100, y + 94);
         }
       });
 
